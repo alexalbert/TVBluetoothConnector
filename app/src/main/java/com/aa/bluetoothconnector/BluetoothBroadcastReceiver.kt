@@ -75,7 +75,7 @@ class BluetoothBroadcastReceiver private constructor(callback: Callback) : Broad
         }
 
         private val filter: IntentFilter
-            private get() = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
+            get() = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
 
         /**
          * Convenience method to do a checked unregistration of a broadcast receiver. Occasionally
