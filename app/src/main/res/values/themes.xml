@@ -1,0 +1,4 @@
+<resources>
+
+    <style name="Theme.BlueToothConnector" parent="@style/Theme.Leanback" />
+</resources>
