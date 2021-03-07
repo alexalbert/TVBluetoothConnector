@@ -1,12 +1,10 @@
 package com.aa.bluetoothconnector
 
-import android.app.Activity
 import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.BluetoothProfile.ServiceListener
 import android.content.Context
-import android.util.Log
 
 /**
  *

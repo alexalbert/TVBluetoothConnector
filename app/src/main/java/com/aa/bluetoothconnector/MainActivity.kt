@@ -1,5 +1,6 @@
 package com.aa.bluetoothconnector
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothA2dp
 import android.bluetooth.BluetoothAdapter
@@ -10,26 +11,19 @@ import android.util.Log
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
+const val TAG = "BluetoothConnector"
 
-//android.app.ServiceConnectionLeaked: Activity com.aa.bluetoothconnector.MainActivity has leaked ServiceConnection android.bluetooth.BluetoothA2dp$2@2f57d07 that was originally bound here
-//at android.app.LoadedApk$ServiceDispatcher.<init>(LoadedApk.java:1610)
+const val BT_DEVICE_NAME = "Samsung Level U"
 
-val TAG = "BluetoothConnector"
-
-/**
- * Loads [MainFragment].
- */
 class MainActivity : Activity(),  BluetoothBroadcastReceiver.Callback, BluetoothA2DPRequester.Callback {
 
-    val LEVEL_U = "Samsung Level U"
-
-    var mAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
+    val mAdapter: BluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         //Already connected, skip the rest
-        if (mAdapter.isEnabled()) {
+        if (mAdapter.isEnabled) {
             onBluetoothConnected();
             return;
         }
@@ -54,7 +48,7 @@ class MainActivity : Activity(),  BluetoothBroadcastReceiver.Callback, Bluetooth
 
     override fun onA2DPProxyReceived(proxy: BluetoothA2dp?) {
         val connect: Method? = getConnectMethod()
-        val device: BluetoothDevice? = findBondedDeviceByName(mAdapter, LEVEL_U)
+        val device: BluetoothDevice? = findBondedDeviceByName(mAdapter, BT_DEVICE_NAME)
 
         //If either is null, just return. The errors have already been logged
         if (connect == null || device == null) {
@@ -63,7 +57,7 @@ class MainActivity : Activity(),  BluetoothBroadcastReceiver.Callback, Bluetooth
         try {
             connect.setAccessible(true)
             connect.invoke(proxy, device)
-            Log.i(TAG, "Connected!!!")
+            Log.i(TAG, BT_DEVICE_NAME + " is connected")
             mAdapter.closeProfileProxy( BluetoothProfile.A2DP, proxy)
         } catch (ex: InvocationTargetException) {
             Log.e(
@@ -82,6 +76,7 @@ class MainActivity : Activity(),  BluetoothBroadcastReceiver.Callback, Bluetooth
      * Wrapper around some reflection code to get the hidden 'connect()' method
      * @return the connect(BluetoothDevice) method, or null if it could not be found
      */
+    @SuppressLint("DiscouragedPrivateApi")
     private fun getConnectMethod(): Method? {
         return try {
             BluetoothA2dp::class.java.getDeclaredMethod("connect", BluetoothDevice::class.java)
@@ -122,7 +117,7 @@ class MainActivity : Activity(),  BluetoothBroadcastReceiver.Callback, Bluetooth
      * @param adapter the BluetoothAdapter whose bonded devices should be obtained
      * @return the set of all bonded devices to the adapter; an empty set if there was an error
      */
-    private fun getBondedDevices(adapter: BluetoothAdapter): Set<BluetoothDevice?>? {
+    private fun getBondedDevices(adapter: BluetoothAdapter): Set<BluetoothDevice?> {
         var results = adapter.bondedDevices
         if (results == null) {
             results = HashSet()
